@@ -1,9 +1,15 @@
 ## アドバンスビジョン期末課題
-デモプログラムを実装する前に、以下のコマンドで、必要なPythonパッケージをインストールすること
+デモプログラムを実装する前に、以下のコマンドで、必要なPythonパッケージをインストールしてください
 
 ・pip install numpy scipy matplotlib librosa soundfile
 
 ・pip install sounddevice
+
+## Python環境の確認
+
+ターミナルで、以下のコマンドより、使用しているPythonのバージョンが3.6以上であることを確認してください
+
+・python --version
 
 
 ## ライセンス
