@@ -1,0 +1,107 @@
+import numpy as np
+import librosa
+import librosa.display
+import matplotlib.pyplot as plt
+import soundfile as sf
+import sounddevice as sd
+
+# 音声が終了するまで待機
+def play_audio(audio, sr):
+    sd.play(audio, sr)
+    sd.wait()  
+
+# 音声データの読み込み（最初の10サンプルを表示させる）
+def load_audio(file_path):
+    audio, sr = librosa.load(file_path, sr=None)
+    print(f"Audio data: {audio[:10]}...")
+    print(f"Sampling rate: {sr}")
+    return audio, sr
+
+# STFTを適用し周波数領域に変換
+def apply_stft(audio, n_fft=1024, hop_length=512):
+    stft_result = librosa.stft(audio, n_fft=n_fft, hop_length=hop_length)
+    return stft_result
+
+# ノイズの推定（フレームごとの最小値を基準とすし、平均値より推定する）
+def estimate_noise(stft_result):
+    magnitude = np.abs(stft_result)
+    noise_profile = np.mean(magnitude, axis=1, keepdims=True)
+    return noise_profile
+
+# Wienerフィルタの適用（最初の10サンプルを表示させる）
+def apply_wiener_filter(stft_result, noise_profile):
+    magnitude = np.abs(stft_result)
+    phase = np.angle(stft_result)
+    gain = np.maximum(1 - noise_profile / (magnitude + 1e-8), 0)
+    print(f"Gain: {gain[:10]}...")
+    enhanced_magnitude = magnitude * gain
+    return enhanced_magnitude * np.exp(1j * phase)
+
+# 逆STFT（時系列信号に戻す）
+def apply_istft(filtered_stft, hop_length=512):
+    audio_restored = librosa.istft(filtered_stft, hop_length=hop_length)
+    return audio_restored
+
+# 結果を可視化（波形・スペクトログラム）
+def visualize_results(original_audio, enhanced_audio, sr, stft_result=None, filtered_stft=None):
+    
+    plt.figure(figsize=(12, 6))
+    plt.subplot(2, 1, 1)
+    librosa.display.waveshow(original_audio, sr=sr)
+    plt.title("Original Audio")
+    plt.subplot(2, 1, 2)
+    librosa.display.waveshow(enhanced_audio, sr=sr)
+    plt.title("Enhanced Audio")
+    plt.tight_layout()
+    plt.show()
+
+    if stft_result is not None:
+        plt.figure(figsize=(12, 6))
+        plt.subplot(2, 1, 1)
+        librosa.display.specshow(librosa.amplitude_to_db(np.abs(stft_result), ref=np.max), y_axis='log', x_axis='time')
+        plt.title("Original Spectrogram")
+        plt.colorbar(format="%+2.0f dB")
+
+    if filtered_stft is not None:
+        plt.subplot(2, 1, 2)
+        librosa.display.specshow(librosa.amplitude_to_db(np.abs(filtered_stft), ref=np.max), y_axis='log', x_axis='time')
+        plt.title("Filtered Spectrogram")
+        plt.colorbar(format="%+2.0f dB")
+
+    if stft_result is not None and filtered_stft is not None:
+        plt.tight_layout()
+        plt.show()
+
+# 音声再生
+def play_audio(audio, sr):
+    sd.play(audio, sr)
+    sd.wait()
+
+# メイン処理（ノイズ除去前後の音声再生）
+def main(file_path, output_path):
+    audio, sr = load_audio(file_path)
+    
+    print("Playing original audio...")
+    play_audio(audio, sr)
+
+    stft_result = apply_stft(audio)
+    
+    noise_profile = estimate_noise(stft_result)
+    
+    filtered_stft = apply_wiener_filter(stft_result, noise_profile)
+    
+    enhanced_audio = apply_istft(filtered_stft)
+    
+    visualize_results(audio, enhanced_audio, sr, stft_result=stft_result, filtered_stft=filtered_stft)
+    
+    print("Playing enhanced audio...")
+    play_audio(enhanced_audio, sr)
+    
+    sf.write(output_path, enhanced_audio, sr)
+    print(f"Enhanced audio saved to: {output_path}")
+
+# 実行
+if __name__ == "__main__":
+    input_file = r'C:\Users\jump9\Downloads\train_pass_by1.mp3'
+    output_file = r'C:\Users\jump9\Downloads\enhanced_audio.wav'
+    main(input_file, output_file)
