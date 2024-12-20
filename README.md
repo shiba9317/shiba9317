@@ -1,5 +1,8 @@
 ## アドバンスビジョンの期末課題
 
+## ライセンス
+このデモプログラムで使用している音源は、「ノイズ置き場 - 無料効果音で遊ぼう！（このリンク）」より取得したフリー音源である。
+
 <!--
 **shiba9317/shiba9317** is a ✨ _special_ ✨ repository because its `README.md` (this file) appears on your GitHub profile.
 
