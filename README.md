@@ -1,4 +1,9 @@
-## アドバンスビジョンの期末課題
+## アドバンスビジョン期末課題
+デモプログラムを実装する前に、以下のコマンドで、必要なPythonパッケージをインストールすること
+pip install numpy scipy matplotlib librosa soundfile
+
+pip install sounddevice
+
 
 ## ライセンス
 このデモプログラムで使用している音源は、「ノイズ置き場 - 無料効果音で遊ぼう！（[このリンク](https://taira-komori.jpn.org/transfer01.html)）」より取得したフリー音源である。
