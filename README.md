@@ -1,8 +1,9 @@
 ## アドバンスビジョン期末課題
 デモプログラムを実装する前に、以下のコマンドで、必要なPythonパッケージをインストールすること
-pip install numpy scipy matplotlib librosa soundfile
 
-pip install sounddevice
+・pip install numpy scipy matplotlib librosa soundfile
+
+・pip install sounddevice
 
 
 ## ライセンス
